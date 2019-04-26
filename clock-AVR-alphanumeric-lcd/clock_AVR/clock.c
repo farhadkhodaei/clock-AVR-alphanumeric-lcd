@@ -35,14 +35,23 @@ Data Stack size         : 128
 // Declare your global variables here
 #define RELEASED 1
 #define PUSHED 0
-
+#define KEY0 0
+#define KEY1 1
+#define KEY2 2
+#define BUTTON0 PINC.0
+#define BUTTON1 PINC.1
+#define BUTTON2 PINC.2
+#define NO_SET      0
+#define SET_HOUR    1
+#define SET_MIN     2
+#define SET_SECOND  3
 void main(void)
 {
-int pu[3];
+int pushing_status[3];
 // Declare your local variables here
 unsigned char hour, min, sec;
 char str[24];
-int i=0,j=0;
+int setting_state=0,wait_to_read_rtc=0;
 // Crystal Oscillator division factor: 1
 #pragma optsize-
 CLKPR=0x80;
@@ -191,10 +200,10 @@ while (1)
    {  
       
       // Place your code here
-      j++;
-      if (j==10)j=0;
+      wait_to_read_rtc++;
+      if (wait_to_read_rtc==10)wait_to_read_rtc=0;
       
-       if (j>=5)
+       if (wait_to_read_rtc>=5)
        { 
        rtc_get_time(&hour,&min,&sec); 
        sprintf(str,"%02d:%02d:%02d",hour,min,sec); 
@@ -202,15 +211,15 @@ while (1)
        lcd_puts((char *)str);
         }
        delay_ms(50); 
-       if (PINC.0==1)pu[0]=RELEASED;
-       if (PINC.1==1)pu[1]=RELEASED;
-        if (PINC.2==1)pu[2]=RELEASED;
+       if (BUTTON0==1)pushing_status[KEY0]=RELEASED;
+       if (BUTTON1==1)pushing_status[KEY1]=RELEASED;
+        if (BUTTON2==1)pushing_status[KEY2]=RELEASED;
       
-       switch(i)
+       switch(setting_state)
      {  
        
-       case 0: 
-       if (j<5)
+       case NO_SET: 
+       if (wait_to_read_rtc<5)
        {
        rtc_get_time(&hour,&min,&sec);
        sprintf(str,"%02d:%02d:%02d",hour,min,sec);
@@ -220,8 +229,8 @@ while (1)
        
        break;
        
-       case 1:                
-       if(j<5)
+       case SET_HOUR:                
+       if(wait_to_read_rtc<5)
        {
        rtc_get_time(&hour,&min,&sec);
         sprintf(str,"  :%02d:%02d",min,sec);
@@ -231,8 +240,8 @@ while (1)
        
        break;
        
-       case 2:                
-       if(j<5)
+       case SET_MIN:                
+       if(wait_to_read_rtc<5)
        {
        rtc_get_time(&hour,&min,&sec);
        sprintf(str,"%02d:  :%02d",hour,sec);
@@ -242,8 +251,8 @@ while (1)
             
        break;
        
-       case 3:                
-       if(j<5)
+       case SET_SECOND:                
+       if(wait_to_read_rtc<5)
          {
        rtc_get_time(&hour,&min,&sec);
        sprintf(str,"%02d:%02d:  ",hour,min);  
@@ -257,33 +266,33 @@ while (1)
        break;
      }
     
-        if ((PINC.0==0)&&(pu[0]==RELEASED))
+        if ((BUTTON0==0)&&(pushing_status[KEY0]==RELEASED))
         {
            
-            pu[0]=PUSHED;
-            i++;
-            if (i==4)i=0;
+            pushing_status[KEY0]=PUSHED;
+            setting_state++;
+            if (setting_state==4)setting_state=0;
         }
-       if ((PINC.1==0)&&(pu[1]==RELEASED))
+       if ((BUTTON1==0)&&(pushing_status[KEY1]==RELEASED))
        {
-          pu[1]=PUSHED;
-          if (i!=0)
+          pushing_status[KEY1]=PUSHED;
+          if (setting_state!=0)
           {
-             switch(i)
+             switch(setting_state)
              {  
-             case 1:
+             case SET_HOUR:
                rtc_get_time(&hour,&min,&sec);
                hour++;
                if (hour>=24)hour=0;
                rtc_set_time(hour,min,sec);
                break;
-             case 2:
+             case SET_MIN:
                 rtc_get_time(&hour,&min,&sec);
                min++;
                if (min>=60)min=0;
                rtc_set_time(hour,min,sec);
                break;
-             case 3:
+             case SET_SECOND:
              rtc_get_time(&hour,&min,&sec);
                sec=0;
                rtc_set_time(hour,min,sec);
@@ -293,13 +302,13 @@ while (1)
              }
           }
        }
-       if ((PINC.2==0)&&(pu[2]==RELEASED)) 
+       if ((BUTTON2==0)&&(pushing_status[KEY2]==RELEASED)) 
        {
           
-          pu[2]=PUSHED;
-          if (i!=0)
+          pushing_status[KEY2]=PUSHED;
+          if (setting_state!=0)
           {
-             switch(i)
+             switch(setting_state)
              {  
              case 1:
                rtc_get_time(&hour,&min,&sec);
