@@ -2,7 +2,7 @@
 This program was produced by the
 CodeWizardAVR V2.05.3 Standard
 Automatic Program Generator
-© Copyright 1998-2011 Pavel Haiduc, HP InfoTech s.r.l.
+Â© Copyright 1998-2011 Pavel Haiduc, HP InfoTech s.r.l.
 http://www.hpinfotech.com
 
 Project : 
@@ -200,114 +200,110 @@ while (1)
    {  
       
       // Place your code here
-      wait_to_read_rtc++;
-      if (wait_to_read_rtc==10)wait_to_read_rtc=0;
-      
+       wait_to_read_rtc++;
+       if (wait_to_read_rtc==10)wait_to_read_rtc=0;
        if (wait_to_read_rtc>=5)
        { 
-       rtc_get_time(&hour,&min,&sec); 
-       sprintf(str,"%02d:%02d:%02d",hour,min,sec); 
-       lcd_clear();
-       lcd_puts((char *)str);
-        }
+          rtc_get_time(&hour,&min,&sec); 
+          sprintf(str,"%02d:%02d:%02d",hour,min,sec); 
+          lcd_clear();
+          lcd_puts((char *)str);
+       }
        delay_ms(50); 
        if (BUTTON0==1)pushing_status[KEY0]=RELEASED;
        if (BUTTON1==1)pushing_status[KEY1]=RELEASED;
-        if (BUTTON2==1)pushing_status[KEY2]=RELEASED;
+       if (BUTTON2==1)pushing_status[KEY2]=RELEASED;
       
        switch(setting_state)
-     {  
+       {  
+           case NO_SET: 
+              if (wait_to_read_rtc<5)
+              {
+                 rtc_get_time(&hour,&min,&sec);
+                 sprintf(str,"%02d:%02d:%02d",hour,min,sec);
+                 lcd_clear(); 
+                 lcd_puts((char *)str);
+              }
+              delay_ms(50);
+              break;
        
-       case NO_SET: 
-       if (wait_to_read_rtc<5)
-       {
-       rtc_get_time(&hour,&min,&sec);
-       sprintf(str,"%02d:%02d:%02d",hour,min,sec);
-       lcd_clear(); 
-       lcd_puts((char *)str);}
-       delay_ms(50);
+           case SET_HOUR:                
+              if(wait_to_read_rtc<5)
+              {
+                  rtc_get_time(&hour,&min,&sec);
+                  sprintf(str,"  :%02d:%02d",min,sec);
+                  lcd_clear(); 
+                  lcd_puts((char *)str);
+              }
+              delay_ms(50);
+              break;
        
-       break;
+           case SET_MIN:                
+              if(wait_to_read_rtc<5)
+              {
+                   rtc_get_time(&hour,&min,&sec);
+                   sprintf(str,"%02d:  :%02d",hour,sec);
+                   lcd_clear(); 
+                   lcd_puts((char *)str);
+              }
+              delay_ms(50);
+              break;
        
-       case SET_HOUR:                
-       if(wait_to_read_rtc<5)
-       {
-       rtc_get_time(&hour,&min,&sec);
-        sprintf(str,"  :%02d:%02d",min,sec);
-        lcd_clear(); 
-       lcd_puts((char *)str);}
-       delay_ms(50);
+           case SET_SECOND:                
+              if(wait_to_read_rtc<5)
+              {
+                   rtc_get_time(&hour,&min,&sec);
+                   sprintf(str,"%02d:%02d:  ",hour,min);  
+                   lcd_clear();
+                   lcd_puts((char *)str);
+              }
+              delay_ms(50);
+              break;
        
-       break;
-       
-       case SET_MIN:                
-       if(wait_to_read_rtc<5)
-       {
-       rtc_get_time(&hour,&min,&sec);
-       sprintf(str,"%02d:  :%02d",hour,sec);
-        lcd_clear(); 
-       lcd_puts((char *)str);}
-       delay_ms(50);
-            
-       break;
-       
-       case SET_SECOND:                
-       if(wait_to_read_rtc<5)
-         {
-       rtc_get_time(&hour,&min,&sec);
-       sprintf(str,"%02d:%02d:  ",hour,min);  
-       lcd_clear();
-       lcd_puts((char *)str);}
-       delay_ms(50);
-       
-       break;
-       
-       default:
-       break;
-     }
+           default:
+              break;
+       }
     
-        if ((BUTTON0==0)&&(pushing_status[KEY0]==RELEASED))
-        {
-           
+       if ((BUTTON0==0)&&(pushing_status[KEY0]==RELEASED))
+       {
             pushing_status[KEY0]=PUSHED;
             setting_state++;
             if (setting_state==4)setting_state=0;
-        }
+       }
        if ((BUTTON1==0)&&(pushing_status[KEY1]==RELEASED))
        {
-          pushing_status[KEY1]=PUSHED;
-          if (setting_state!=0)
-          {
-             switch(setting_state)
-             {  
-             case SET_HOUR:
-               rtc_get_time(&hour,&min,&sec);
-               hour++;
-               if (hour>=24)hour=0;
-               rtc_set_time(hour,min,sec);
-               break;
-             case SET_MIN:
-                rtc_get_time(&hour,&min,&sec);
-               min++;
-               if (min>=60)min=0;
-               rtc_set_time(hour,min,sec);
-               break;
-             case SET_SECOND:
-             rtc_get_time(&hour,&min,&sec);
-               sec=0;
-               rtc_set_time(hour,min,sec);
-               break;
-             default:
-             break;
-             }
-          }
+            pushing_status[KEY1]=PUSHED;
+            if (setting_state!=0)
+            {
+                 switch(setting_state)
+                 {  
+                 case SET_HOUR:
+                      rtc_get_time(&hour,&min,&sec);
+                      hour++;
+                      if (hour>=24)hour=0;
+                      rtc_set_time(hour,min,sec);
+                      break;
+                 case SET_MIN:
+                      rtc_get_time(&hour,&min,&sec);
+                      min++;
+                      if (min>=60)min=0;
+                      rtc_set_time(hour,min,sec);
+                      break;
+                 case SET_SECOND:
+                      rtc_get_time(&hour,&min,&sec);
+                      sec=0;
+                      rtc_set_time(hour,min,sec);
+                      break;
+                 default:
+                      break;
+                 }
+            }
        }
        if ((BUTTON2==0)&&(pushing_status[KEY2]==RELEASED)) 
        {
-          
-          pushing_status[KEY2]=PUSHED;
-          if (setting_state!=0)
-          {
+           pushing_status[KEY2]=PUSHED;
+           if (setting_state!=0)
+           {
              switch(setting_state)
              {  
              case 1:
