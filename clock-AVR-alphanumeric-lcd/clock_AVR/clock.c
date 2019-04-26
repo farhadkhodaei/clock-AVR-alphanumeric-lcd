@@ -51,7 +51,7 @@ int pushing_status[3];
 // Declare your local variables here
 unsigned char hour, min, sec;
 char str[24];
-int setting_state=0,wait_to_read_rtc=0;
+int setting_state=0,wait_to_operate=0;
 // Crystal Oscillator division factor: 1
 #pragma optsize-
 CLKPR=0x80;
@@ -200,9 +200,9 @@ while (1)
     {  
       
       // Place your code here
-       wait_to_read_rtc++;
-       if (wait_to_read_rtc==10)wait_to_read_rtc=0;
-       if (wait_to_read_rtc>=5)
+       wait_to_operate++;
+       if (wait_to_operate==10)wait_to_operate=0;
+       if (wait_to_operate==5)
        { 
           rtc_get_time(&hour,&min,&sec); 
           sprintf(str,"%02d:%02d:%02d",hour,min,sec); 
@@ -217,7 +217,7 @@ while (1)
        switch(setting_state)
        {  
            case NO_SET: 
-              if (wait_to_read_rtc<5)
+              if (wait_to_operate==0)
               {
                  rtc_get_time(&hour,&min,&sec);
                  sprintf(str,"%02d:%02d:%02d",hour,min,sec);
@@ -228,7 +228,7 @@ while (1)
               break;
        
            case SET_HOUR:                
-              if(wait_to_read_rtc<5)
+              if(wait_to_operate==0)
               {
                   rtc_get_time(&hour,&min,&sec);
                   sprintf(str,"  :%02d:%02d",min,sec);
@@ -239,7 +239,7 @@ while (1)
               break;
        
            case SET_MIN:                
-              if(wait_to_read_rtc<5)
+              if(wait_to_operate==0)
               {
                    rtc_get_time(&hour,&min,&sec);
                    sprintf(str,"%02d:  :%02d",hour,sec);
@@ -250,7 +250,7 @@ while (1)
               break;
        
            case SET_SECOND:                
-              if(wait_to_read_rtc<5)
+              if(wait_to_operate==0)
               {
                    rtc_get_time(&hour,&min,&sec);
                    sprintf(str,"%02d:%02d:  ",hour,min);  
