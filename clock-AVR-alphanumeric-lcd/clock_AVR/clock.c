@@ -197,7 +197,7 @@ rtc_init(0,0,0);
 lcd_init(16);
 
 while (1)
-   {  
+    {  
       
       // Place your code here
        wait_to_read_rtc++;
@@ -328,7 +328,6 @@ while (1)
                  }
             }
        }
-        
-   }   
+    }   
 }
 
