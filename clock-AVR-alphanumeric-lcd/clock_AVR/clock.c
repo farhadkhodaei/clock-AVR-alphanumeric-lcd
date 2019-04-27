@@ -228,7 +228,7 @@ while (1)
               break;
        
            case SET_HOUR:                
-              if(wait_to_operate==0)
+              if (wait_to_operate==0)
               {
                   rtc_get_time(&hour,&min,&sec);
                   sprintf(str,"  :%02d:%02d",min,sec);
@@ -239,7 +239,7 @@ while (1)
               break;
        
            case SET_MIN:                
-              if(wait_to_operate==0)
+              if (wait_to_operate==0)
               {
                    rtc_get_time(&hour,&min,&sec);
                    sprintf(str,"%02d:  :%02d",hour,sec);
@@ -250,7 +250,7 @@ while (1)
               break;
        
            case SET_SECOND:                
-              if(wait_to_operate==0)
+              if (wait_to_operate==0)
               {
                    rtc_get_time(&hour,&min,&sec);
                    sprintf(str,"%02d:%02d:  ",hour,min);  
