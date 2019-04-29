@@ -209,7 +209,6 @@ while (1)
           lcd_clear();
           lcd_puts((char *)str);
        }
-       delay_ms(50); 
        if (BUTTON0==RELEASED)pushing_status[KEY0]=RELEASED;
        if (BUTTON1==RELEASED)pushing_status[KEY1]=RELEASED;
        if (BUTTON2==RELEASED)pushing_status[KEY2]=RELEASED;
